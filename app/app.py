@@ -23,20 +23,27 @@ app = FlaskAPI(__name__)
 # Routes
 # =========================
 
+#[id_conductor,puntos actuales,puntos perdidos,puntos ganados]
 notes = {
-    0: 'do the shopping',
-    1: 'build the codez',
-    2: 'paint the door',
+    0: ['30245467K',11,1,0],
+    1: ['28453456J',9,3,0],
+    2: ['32323443N',12,2,2],
+    3: ['28437658C',8,0,0],
+    4: ['32466658X',14,0,0],
+    5: ['28564768L',8,5,1],
 }
 
 def note_repr(key):
     return {
         'url': request.host_url.rstrip('/') + url_for('notes_detail', key=key),
-        'text': notes[key]
+        'id_conductor': notes[key][0],
+        'puntos_actuales': notes[key][1],
+        'puntos_perdidos':notes[key][2],
+        'puntos_recuperados':notes[key][3]
     }
 
 
-@app.route("/", methods=['GET', 'POST'])
+@app.route("/puntos", methods=['GET', 'POST'])
 def notes_list():
     """
     List or create notes.
@@ -51,7 +58,7 @@ def notes_list():
     return [note_repr(idx) for idx in sorted(notes.keys())]
 
 
-@app.route("/<int:key>/", methods=['GET', 'PUT', 'DELETE'])
+@app.route("/puntos/<int:key>/", methods=['GET', 'PUT', 'DELETE'])
 def notes_detail(key):
     """
     Retrieve, update or delete note instances.
