@@ -65,6 +65,7 @@ class Multa(Resource):
 # Rutas
 # =========================
 api.add_resource(Historial,'/puntos/historial/<dni>')
+api.add_resource(Puntos,'/puntos')
 
 
 if __name__ == '__main__':
