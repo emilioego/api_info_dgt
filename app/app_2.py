@@ -54,13 +54,18 @@ class Puntos():
 class Historial(Resource):
     def get(self,dni):
         records = [doc for doc in db.test.find({"id_conductor":dni})]
-        #return dumps({'response':records})
+        return json.loads(json_util.dumps(records))
+
+class Multa(Resource):
+    def get(self,dni):
+        records = [doc for doc in db.test.find({"id_conductor":dni})]
         return json.loads(json_util.dumps(records))
 
 # =========================
 # Rutas
 # =========================
 api.add_resource(Historial,'/puntos/historial/<dni>')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

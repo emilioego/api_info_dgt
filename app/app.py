@@ -4,79 +4,68 @@
 # Librarys
 # =========================
 import os
-from os.path import join, dirname
-from flask import request, url_for
-from flask_api import FlaskAPI, status, exceptions
+from flask import Flask,request, jsonify
+from flask_restplus import Resource, Api
+from pymongo import MongoClient
+import urllib.parse
+import datetime
+import json
+from bson import json_util, ObjectId
 
 # =========================
 # Extensions initialization
 # =========================
-app = FlaskAPI(__name__)
+app = Flask(__name__)
+api = Api(app)
+client = MongoClient("mongodb+srv://emilioego:Orellana15@api-info-puntos-dgt-tp10l.mongodb.net/test?retryWrites=true&w=majority")
+db = client['puntos']
 
 # =========================
-# Extensions initialization
+# Metodos
 # =========================
 
-
+def validoDNI(dni_min):
+    tabla = "TRWAGMYFPDXBNJZSQVHLCKE"
+    dig_ext = "XYZ"
+    reemp_dig_ext = {'X':'0', 'Y':'1', 'Z':'2'}
+    numeros = "1234567890"
+    dni = dni_min.upper()
+    if len(dni) == 9:
+        dig_control = dni[8]
+        dni = dni[:8]
+        if dni[0] in dig_ext:
+            dni = dni.replace(dni[0], reemp_dig_ext[dni[0]])
+        if len(dni) == len([n for n in dni if n in numeros]) and tabla[int(dni)%23] == dig_control:
+            return dni_min
+    return False
 
 # =========================
-# Routes
+# Clases
 # =========================
 
-#[id_conductor,puntos actuales,puntos perdidos,puntos ganados]
-notes = {
-    0: ['30245467K',11,1,0],
-    1: ['28453456J',9,3,0],
-    2: ['32323443N',12,2,2],
-    3: ['28437658C',8,0,0],
-    4: ['32466658X',14,0,0],
-    5: ['28564768L',8,5,1],
-}
+class Puntos():
+    def __init__(self,dni):
+        self.puntos_actuales = 13
+        self.dni = dni
+        self.puntos_perdidos = 0
+        self.puntos_recuperados = 0
+        self.timestamp = datetime.datetime.utcnow()
 
-def note_repr(key):
-    return {
-        'url': request.host_url.rstrip('/') + url_for('notes_detail', key=key),
-        'id_conductor': notes[key][0],
-        'puntos_actuales': notes[key][1],
-        'puntos_perdidos':notes[key][2],
-        'puntos_recuperados':notes[key][3]
-    }
+class Historial(Resource):
+    def get(self,dni):
+        records = [doc for doc in db.test.find({"id_conductor":dni})]
+        return json.loads(json_util.dumps(records))
 
+class Multa(Resource):
+    def get(self,dni):
+        records = [doc for doc in db.test.find({"id_conductor":dni})]
+        return json.loads(json_util.dumps(records))
 
-@app.route("/puntos", methods=['GET', 'POST'])
-def notes_list():
-    """
-    List or create notes.
-    """
-    if request.method == 'POST':
-        note = str(request.data.get('text', ''))
-        idx = max(notes.keys()) + 1
-        notes[idx] = note
-        return note_repr(idx), status.HTTP_201_CREATED
-
-    # request.method == 'GET'
-    return [note_repr(idx) for idx in sorted(notes.keys())]
+# =========================
+# Rutas
+# =========================
+api.add_resource(Historial,'/puntos/historial/<dni>')
 
 
-@app.route("/puntos/<int:key>/", methods=['GET', 'PUT', 'DELETE'])
-def notes_detail(key):
-    """
-    Retrieve, update or delete note instances.
-    """
-    if request.method == 'PUT':
-        note = str(request.data.get('text', ''))
-        notes[key] = note
-        return note_repr(key)
-
-    elif request.method == 'DELETE':
-        notes.pop(key, None)
-        return '', status.HTTP_204_NO_CONTENT
-
-    # request.method == 'GET'
-    if key not in notes:
-        raise exceptions.NotFound()
-    return note_repr(key)
-
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(debug=True)
