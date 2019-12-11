@@ -10,6 +10,7 @@ from pymongo import MongoClient
 import urllib.parse
 import datetime
 import json
+from bson import json_util, ObjectId
 
 # =========================
 # Extensions initialization
@@ -52,8 +53,9 @@ class Puntos():
 
 class Historial(Resource):
     def get(self,dni):
-        #records = db.test.find({"dni":dni})
-        return [doc for doc in db.test.find({"dni":dni})]
+        records = [doc for doc in db.test.find({"id_conductor":dni})]
+        #return dumps({'response':records})
+        return json.loads(json_util.dumps(records))
 
 # =========================
 # Rutas
