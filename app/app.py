@@ -74,13 +74,20 @@ class PuntosConductor(Resource):
 
 class Historial(Resource):
     def get(self,dni):
-        records = [doc for doc in test.find({"dni":dni}).sort("date")]
-        return json.loads(json_util.dumps(records))
+        records = [doc for doc in test.find({"dni":dni}).sort("date", -1)]
+        [doc.pop('_id',None) for doc in records]
+        return jsonify({'result' : records})
 
 class Multa(Resource):
-    def get(self,dni):
-        records = [doc for doc in test.find({"dni":dni})]
-        return json.loads(json_util.dumps(records))
+    def get(self,dni,npuntos):
+        #Hacemos GET del último record
+        records = [doc for doc in test.find({"dni":dni}).sort("date", -1)]
+        x = dict(records[0])
+        print(x)
+        record = x.pop('_id',None)
+        print(record)
+        return jsonify({'result' : list(record)})
+
 
 # =========================
 # Rutas
@@ -88,6 +95,7 @@ class Multa(Resource):
 api.add_resource(Historial,'/puntos/historial/<dni>')
 api.add_resource(Puntos,'/puntos')
 api.add_resource(PuntosConductor,'/puntos/<dni>')
+api.add_resource(Multa,'/puntos/<dni>/multa/<npuntos>')
 
 if __name__ == '__main__':
     app.run(debug=True)
