@@ -90,11 +90,8 @@ class Multa(Resource):
         #Nos traemos los params
         dni = flask.request.args.get("dni")
         npuntos = flask.request.args.get("npuntos")
-        print(dni)
-        print(npuntos)
         #Hacemos GET del último record
         records = [doc for doc in test.find({"dni":dni}).sort("date", -1)]
-        print(records)
         [doc.pop('_id',None) for doc in records]
         punto_nuevo = int(records[0].get('puntos_actuales')) - int(npuntos)
         punto_perdido_nuevo = int(records[0].get('puntos_perdidos')) + int(npuntos)
