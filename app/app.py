@@ -86,19 +86,47 @@ class Historial(Resource):
         return jsonify({'result' : records})
 
 class Multa(Resource):
-    def get(self,dni,npuntos):
+    def post(self):
+        #Nos traemos los params
+        dni = flask.request.args.get("dni")
+        npuntos = flask.request.args.get("npuntos")
+        print(dni)
+        print(npuntos)
         #Hacemos GET del último record
         records = [doc for doc in test.find({"dni":dni}).sort("date", -1)]
+        print(records)
         [doc.pop('_id',None) for doc in records]
         punto_nuevo = int(records[0].get('puntos_actuales')) - int(npuntos)
         punto_perdido_nuevo = int(records[0].get('puntos_perdidos')) + int(npuntos)
         records[0]['puntos_actuales'] = punto_nuevo
         records[0]['puntos_perdidos'] = punto_perdido_nuevo
-        Puntos.post()
-        
-        
-        
-        return jsonify({'result' : records})
+        timestamp=datetime.utcnow()
+        post = test.insert({'dni': records[0]['dni'],
+                                'puntos_actuales': records[0]['puntos_actuales'], 
+                                'puntos_perdidos': records[0]['puntos_perdidos'], 
+                                'puntos_recuperados': records[0]['puntos_recuperados'],
+                                 'date' : timestamp })
+        return jsonify({'result' : records[0]})
+
+class Recupera(Resource):
+    def post(self):
+        #Nos traemos los params
+        dni = flask.request.args.get("dni")
+        npuntos = flask.request.args.get("npuntos")
+        #Hacemos GET del último record
+        records = [doc for doc in test.find({"dni":dni}).sort("date", -1)]
+        [doc.pop('_id',None) for doc in records]
+        punto_nuevo = int(records[0].get('puntos_actuales')) + int(npuntos)
+        punto_recuperado_nuevo = int(records[0].get('puntos_recuperados')) + int(npuntos)
+        records[0]['puntos_actuales'] = punto_nuevo
+        records[0]['puntos_recuperados'] = punto_recuperado_nuevo
+        timestamp=datetime.utcnow()
+        post = test.insert({'dni': records[0]['dni'],
+                                'puntos_actuales': records[0]['puntos_actuales'], 
+                                'puntos_perdidos': records[0]['puntos_perdidos'], 
+                                'puntos_recuperados': records[0]['puntos_recuperados'],
+                                 'date' : timestamp })
+        return jsonify({'result' : records[0]})
 
 
 # =========================
@@ -107,7 +135,8 @@ class Multa(Resource):
 api.add_resource(Historial,'/puntos/historial/<dni>')
 api.add_resource(Puntos,'/puntos')
 api.add_resource(PuntosConductor,'/puntos/<dni>')
-api.add_resource(Multa,'/puntos/<dni>/multa/<npuntos>')
+api.add_resource(Multa,'/puntos/multa/')
+api.add_resource(Recupera,'/puntos/recupera/')
 
 if __name__ == '__main__':
     app.run(debug=True)
