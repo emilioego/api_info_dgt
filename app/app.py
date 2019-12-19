@@ -89,11 +89,16 @@ class Multa(Resource):
     def get(self,dni,npuntos):
         #Hacemos GET del último record
         records = [doc for doc in test.find({"dni":dni}).sort("date", -1)]
-        x = dict(records[0])
-        print(x)
-        record = x.pop('_id',None)
-        print(record)
-        return jsonify({'result' : list(record)})
+        [doc.pop('_id',None) for doc in records]
+        punto_nuevo = int(records[0].get('puntos_actuales')) - int(npuntos)
+        punto_perdido_nuevo = int(records[0].get('puntos_perdidos')) + int(npuntos)
+        records[0]['puntos_actuales'] = punto_nuevo
+        records[0]['puntos_perdidos'] = punto_perdido_nuevo
+        Puntos.post()
+        
+        
+        
+        return jsonify({'result' : records})
 
 
 # =========================
