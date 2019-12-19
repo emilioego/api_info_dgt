@@ -40,9 +40,9 @@ class Puntos(Resource):
     
     #Se obtiene toda la información de los puntos
     def get(self):
-        output = []
-        for s in test.find():
-            output.append({'puntos_actuales' : s['puntos_actuales'], 'puntos_perdidos' : s['puntos_perdidos'],'dni' : s['dni'],'puntos_recuperados' : s['puntos_recuperados'],'date' : s['date']})
+        output = [doc for doc in test.find()]
+        [doc.pop('_id',None) for doc in output]
+
         return jsonify({'result' : output})
 
     # Inserta un nuevo conductor 
@@ -57,6 +57,7 @@ class Puntos(Resource):
         output = { 'dni' : nuevo_registro['dni'],'puntos_actuales' : nuevo_registro['puntos_actuales'], 'puntos_perdidos' : nuevo_registro['puntos_perdidos'], 'puntos_recuperados' : nuevo_registro['puntos_recuperados'],'date' : nuevo_registro['date']}
         return jsonify({'result' : output})
 
+
     #Borra del sistema los puntos de un conductor específico
     def delete(self):
         dni = flask.request.args.get("dni") 
@@ -67,10 +68,16 @@ class Puntos(Resource):
 class PuntosConductor(Resource):
     #Trae la información de los puntos de un conductor en concreto
     def get(self,dni):
-        output = []
-        for s in test.find({"dni":dni}):
-            output.append({'puntos_actuales' : s['puntos_actuales'], 'puntos_perdidos' : s['puntos_perdidos'],'dni' : s['dni'],'puntos_recuperados' : s['puntos_recuperados'],'date' : s['date']})
+        output = [doc for doc in test.find({"dni":dni})]
+        [doc.pop('_id',None) for doc in output]
         return jsonify({'result' : output})
+
+    #Actualiza el DNI de un conductor específico
+    def put(self,dni):
+        dni_nuevo=flask.request.args.get("dni")
+        test.update({'dni': dni},{'$set': {'dni': dni_nuevo} }, upsert=False, multi=False)
+        return "DNI modificado correctamente"
+       
 
 class Historial(Resource):
     def get(self,dni):
