@@ -25,7 +25,14 @@ test = db['mytable']
 # =========================
 # Metodos
 # =========================
-
+def checkDB():
+    try:
+        print (ego)
+        pd = client['puntos']
+        return True
+    except:
+        return False
+    
 # =========================
 # Clases
 # =========================
@@ -86,9 +93,8 @@ class Historial(Resource):
         return jsonify({'result' : records})
 
 class Multa(Resource):
-    def post(self):
+    def post(self,dni):
         #Nos traemos los params
-        dni = flask.request.args.get("dni")
         npuntos = flask.request.args.get("npuntos")
         #Hacemos GET del último record
         records = [doc for doc in test.find({"dni":dni}).sort("date", -1)]
@@ -106,9 +112,8 @@ class Multa(Resource):
         return jsonify({'result' : records[0]})
 
 class Recupera(Resource):
-    def post(self):
+    def post(self,dni):
         #Nos traemos los params
-        dni = flask.request.args.get("dni")
         npuntos = flask.request.args.get("npuntos")
         #Hacemos GET del último record
         records = [doc for doc in test.find({"dni":dni}).sort("date", -1)]
@@ -132,8 +137,12 @@ class Recupera(Resource):
 api.add_resource(Historial,'/puntos/historial/<dni>')
 api.add_resource(Puntos,'/puntos')
 api.add_resource(PuntosConductor,'/puntos/<dni>')
-api.add_resource(Multa,'/puntos/multa/')
-api.add_resource(Recupera,'/puntos/recupera/')
+api.add_resource(Multa,'/puntos/<dni>/multa/')
+api.add_resource(Recupera,'/puntos/<dni>/recupera/')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    try:
+        print(checkDB())
+        app.run(debug=True)
+    except Exception as err:
+        print(err)
