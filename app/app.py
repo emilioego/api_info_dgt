@@ -23,7 +23,6 @@ client = MongoClient("mongodb+srv://emilioego:Orellana15@api-info-puntos-dgt-tp1
 db = client['puntos']
 test = db['mytable']
 
-<<<<<<< HEAD
 # ========================================
 # Métodos para lanzamiento de excepciones
 # ========================================
@@ -51,7 +50,6 @@ def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos):
             return abort(400,'El número de puntos debe ser mayor que 0')
 
 
-=======
 # =========================
 # Metodos
 # =========================
@@ -63,7 +61,6 @@ def checkDB():
     except:
         return False
     
->>>>>>> emilio_dev
 # =========================
 # Clases
 # =========================
