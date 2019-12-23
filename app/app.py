@@ -23,6 +23,7 @@ client = MongoClient("mongodb+srv://emilioego:Orellana15@api-info-puntos-dgt-tp1
 db = client['puntos']
 test = db['mytable']
 
+<<<<<<< HEAD
 # ========================================
 # Métodos para lanzamiento de excepciones
 # ========================================
@@ -50,6 +51,19 @@ def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos):
             return abort(400,'El número de puntos debe ser mayor que 0')
 
 
+=======
+# =========================
+# Metodos
+# =========================
+def checkDB():
+    try:
+        print (ego)
+        pd = client['puntos']
+        return True
+    except:
+        return False
+    
+>>>>>>> emilio_dev
 # =========================
 # Clases
 # =========================
@@ -130,9 +144,8 @@ class Historial(Resource):
         return jsonify({'result' : records})
 
 class Multa(Resource):
-    def post(self):
+    def post(self,dni):
         #Nos traemos los params
-        dni = flask.request.args.get("dni")
         npuntos = flask.request.args.get("npuntos")
         #Lanza una excepción si el DNI no existe en la base de datos
         comprobarDNI(dni,False)  
@@ -154,9 +167,8 @@ class Multa(Resource):
         return jsonify({'result' : records[0]})
 
 class Recupera(Resource):
-    def post(self):
+    def post(self,dni):
         #Nos traemos los params
-        dni = flask.request.args.get("dni")
         npuntos = flask.request.args.get("npuntos")
         #Lanza una excepción si el DNI no existe en la base de datos
         comprobarDNI(dni,False)  
@@ -184,8 +196,12 @@ class Recupera(Resource):
 api.add_resource(Historial,'/puntos/historial/<dni>')
 api.add_resource(Puntos,'/puntos')
 api.add_resource(PuntosConductor,'/puntos/<dni>')
-api.add_resource(Multa,'/puntos/multa/')
-api.add_resource(Recupera,'/puntos/recupera/')
+api.add_resource(Multa,'/puntos/<dni>/multa/')
+api.add_resource(Recupera,'/puntos/<dni>/recupera/')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    try:
+        print(checkDB())
+        app.run(debug=True)
+    except Exception as err:
+        print(err)
