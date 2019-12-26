@@ -13,12 +13,18 @@ import json
 from bson import json_util, ObjectId
 import flask
 from flask import json, request, jsonify,abort,make_response
+from functools import wraps
+import ssl
 
 # =========================
 # Extensions initialization
 # =========================
+
+context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+context.load_cert_chain('server.crt', 'server.key')
+
 app = Flask(__name__)
-api = Api(app)
+api = Api(app,version='1.0',title='API Puntos DGT',description='A simple API about points in the DGT',default_mediatype='application/json',doc='/api/swagger')
 client = MongoClient("mongodb+srv://emilioego:Orellana15@api-info-puntos-dgt-tp10l.mongodb.net/test?retryWrites=true&w=majority")
 db = client['puntos']
 test = db['mytable']
@@ -163,6 +169,7 @@ class Multa(Resource):
                                  'date' : timestamp })
         return jsonify({'result' : records[0]})
 
+
 class Recupera(Resource):
     def post(self,dni):
         #Nos traemos los params
@@ -197,8 +204,4 @@ api.add_resource(Multa,'/puntos/<dni>/multa/')
 api.add_resource(Recupera,'/puntos/<dni>/recupera/')
 
 if __name__ == '__main__':
-    try:
-        print(checkDB())
-        app.run(debug=True)
-    except Exception as err:
-        print(err)
+    app.run(debug=False,ssl_context=context)
