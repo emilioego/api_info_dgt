@@ -82,7 +82,7 @@ class Puntos(Resource):
     #Se obtiene el estado más actual de los puntos de cada conductor
     def get(self):
         lista=[]
-        #Selecciona todos los dnis únicos existentes
+        #Selecciona los dnis únicos que existen en la base de datos
         dnis=test.distinct('dni')
         #Para cada uno de los dnis, filtramos y ordenamos por fecha 
         for i in dnis:
