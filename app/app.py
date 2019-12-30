@@ -13,12 +13,18 @@ import json
 from bson import json_util, ObjectId
 import flask
 from flask import json, request, jsonify,abort,make_response
+from functools import wraps
+import ssl
 
 # =========================
 # Extensions initialization
 # =========================
+
+context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+context.load_cert_chain('server.crt', 'server.key')
+
 app = Flask(__name__)
-api = Api(app)
+api = Api(app,version='1.0',title='API Puntos DGT',description='A simple API about points in the DGT',default_mediatype='application/json',doc='/api/swagger')
 client = MongoClient("mongodb+srv://emilioego:Orellana15@api-info-puntos-dgt-tp10l.mongodb.net/test?retryWrites=true&w=majority")
 db = client['puntos']
 test = db['mytable']
@@ -51,6 +57,17 @@ def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos):
 
 
 # =========================
+# Metodos
+# =========================
+def checkDB():
+    try:
+        print (ego)
+        pd = client['puntos']
+        return True
+    except:
+        return False
+    
+# =========================
 # Clases
 # =========================
 
@@ -62,12 +79,19 @@ class Puntos(Resource):
         self.puntos_recuperados = 0
         self.timestamp = datetime.utcnow()
     
-    #Se obtiene toda la información de los puntos
+    #Se obtiene el estado más actual de los puntos de cada conductor
     def get(self):
-        output = [doc for doc in test.find()]
-        [doc.pop('_id',None) for doc in output]
-        #Si no ponemos nada, por defecto devuelve un código 200(OK)
-        return jsonify({'result' : output})
+        lista=[]
+        #Selecciona todos los dnis únicos existentes
+        dnis=test.distinct('dni')
+        #Para cada uno de los dnis, filtramos y ordenamos por fecha 
+        for i in dnis:
+            records = [doc for doc in test.find({"dni":i}).sort("date", -1)]
+            [doc.pop('_id',None) for doc in records]
+            #Añadimos el más reciente a la lista
+            lista.append(records[0])
+        #Si no ponemos nada, devuelve por defecto un 200(OK)
+        return jsonify({'result' : lista})
 
     # Inserta los puntos de un nuevo conductor 
     def post(self):
@@ -130,9 +154,8 @@ class Historial(Resource):
         return jsonify({'result' : records})
 
 class Multa(Resource):
-    def post(self):
+    def post(self,dni):
         #Nos traemos los params
-        dni = flask.request.args.get("dni")
         npuntos = flask.request.args.get("npuntos")
         #Lanza una excepción si el DNI no existe en la base de datos
         comprobarDNI(dni,False)  
@@ -153,10 +176,10 @@ class Multa(Resource):
                                  'date' : timestamp })
         return jsonify({'result' : records[0]})
 
+
 class Recupera(Resource):
-    def post(self):
+    def post(self,dni):
         #Nos traemos los params
-        dni = flask.request.args.get("dni")
         npuntos = flask.request.args.get("npuntos")
         #Lanza una excepción si el DNI no existe en la base de datos
         comprobarDNI(dni,False)  
@@ -184,8 +207,8 @@ class Recupera(Resource):
 api.add_resource(Historial,'/puntos/historial/<dni>')
 api.add_resource(Puntos,'/puntos')
 api.add_resource(PuntosConductor,'/puntos/<dni>')
-api.add_resource(Multa,'/puntos/multa/')
-api.add_resource(Recupera,'/puntos/recupera/')
+api.add_resource(Multa,'/puntos/<dni>/multa/')
+api.add_resource(Recupera,'/puntos/<dni>/recupera/')
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False,ssl_context=context)
