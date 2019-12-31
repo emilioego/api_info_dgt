@@ -5,7 +5,8 @@
 # =========================
 import os
 from flask import Flask,request, jsonify
-from flask_restplus import Resource, Api
+from flask_restplus import Resource, Api, Namespace
+from flask_httpauth import HTTPBasicAuth
 from pymongo import MongoClient
 import urllib.parse
 from datetime import datetime
@@ -19,12 +20,12 @@ import ssl
 # =========================
 # Extensions initialization
 # =========================
-
+###Añadimos SSL para usar HTTPS###
 context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
 context.load_cert_chain('server.crt', 'server.key')
-
+####
 app = Flask(__name__)
-api = Api(app,version='1.0',title='API Puntos DGT',description='A simple API about points in the DGT',default_mediatype='application/json',doc='/api/swagger')
+api = Api(app,prefix="/api/v1",version='1.0',title='API Puntos DGT',description='A simple API about points in the DGT',default_mediatype='application/json',doc='/api/swagger')
 client = MongoClient("mongodb+srv://emilioego:Orellana15@api-info-puntos-dgt-tp10l.mongodb.net/test?retryWrites=true&w=majority")
 db = client['puntos']
 test = db['mytable']
@@ -61,7 +62,7 @@ def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos):
 # =========================
 def checkDB():
     try:
-        print (ego)
+        print ('ego')
         pd = client['puntos']
         return True
     except:
