@@ -74,7 +74,7 @@ def checkDB():
 
 class Puntos(Resource):
     def __init__(self,dni):
-        self.puntos_actuales = 13
+        self.puntos_actuales = 8
         self.dni = dni
         self.puntos_perdidos = 0
         self.puntos_recuperados = 0
@@ -83,7 +83,7 @@ class Puntos(Resource):
     #Se obtiene el estado más actual de los puntos de cada conductor
     def get(self):
         lista=[]
-        #Selecciona los dnis únicos que existen en la base de datos
+        #Selecciona todos los dnis únicos existentes
         dnis=test.distinct('dni')
         #Para cada uno de los dnis, filtramos y ordenamos por fecha 
         for i in dnis:
@@ -91,28 +91,22 @@ class Puntos(Resource):
             [doc.pop('_id',None) for doc in records]
             #Añadimos el más reciente a la lista
             lista.append(records[0])
-        #Si no ponemos nada, devuelve por defecto un 200(OK)
+        #Por defecto devuelve un código 200(OK)
         return jsonify({'result' : lista})
-
+    
     # Inserta los puntos de un nuevo conductor 
     def post(self):
         #Recogemos los parametros del JSON
         dni = request.json['dni']
-        puntos_actuales = request.json['puntos_actuales']
-        puntos_perdidos = request.json['puntos_perdidos']
-        puntos_recuperados = request.json['puntos_recuperados']
-        timestamp=datetime.utcnow()
-        #Hacemos comprobaciones de los puntos
-        comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,None)  
+        timestamp=datetime.datetime.utcnow()
         #Lanza una excepción si el DNI ya existe en la base de datos
         comprobarDNI(dni,True)      
         #Insertamos el nuevo registro
-        test.insert_one({'dni': dni,'puntos_actuales': puntos_actuales, 'puntos_perdidos': puntos_perdidos, 'puntos_recuperados': puntos_recuperados, 'date' : timestamp })
+        test.insert_one({'dni': dni,'puntos_actuales': 8, 'puntos_perdidos': 0, 'puntos_recuperados': 0, 'date' : timestamp })
         records = [doc for doc in test.find({"dni":dni})]
         [doc.pop('_id',None) for doc in records]
         #Devolvemos código de estado 201(creado)
         return make_response(jsonify({'result' : records}),201)
-
 
     #Borra del sistema los puntos de un conductor específico
     def delete(self):
@@ -132,7 +126,7 @@ class PuntosConductor(Resource):
         #Lanza una excepción si el DNI no existe en la base de datos
         comprobarDNI(dni,False)  
         [doc.pop('_id',None) for doc in output]
-        #Devuelve un estado 200 por defecto
+        #Devuelve un estado 200(OK) por defecto
         return jsonify({'result' : output})
 
 
@@ -142,8 +136,10 @@ class PuntosConductor(Resource):
         #Lanza una excepción si el DNI que quiero modificar no existe en la base de datos
         comprobarDNI(dni,False)  
         test.update({'dni': dni},{'$set': {'dni': dni_nuevo} }, upsert=False, multi=False)
+        records = [doc for doc in test.find({"dni":dni_nuevo})]
+        [doc.pop('_id',None) for doc in records]
         #Devolvemos un código 201(Creado)
-        return "DNI modificado correctamente",201
+        return make_response(jsonify({'result' : records}),201)
        
 
 class Historial(Resource):
