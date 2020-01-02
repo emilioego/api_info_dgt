@@ -4,19 +4,17 @@
 # Librarys
 # =========================
 import os
-from flask import Flask,request, jsonify
+import yaml
+import flask
+from flask import Flask,request, jsonify, json, abort,make_response
 from flask_restplus import Resource, Api, Namespace
-from flask_httpauth import HTTPBasicAuth
 from pymongo import MongoClient
 import urllib.parse
 from datetime import datetime
 import json
 from bson import json_util, ObjectId
-import flask
-from flask import json, request, jsonify,abort,make_response
 from functools import wraps
 import ssl
-from flask_httpauth import HTTPBasicAuth,HTTPTokenAuth
 
 # =========================
 # Extensions initialization
@@ -27,10 +25,11 @@ context.load_cert_chain('server.crt', 'server.key')
 ####
 app = Flask(__name__)
 api = Api(app,prefix="/api/v1",version='1.0',title='API Puntos DGT',description='A simple API about points in the DGT',default_mediatype='application/json',doc='/api/swagger')
-auth = HTTPTokenAuth(scheme='Token')
 client = MongoClient("mongodb+srv://emilioego:Orellana15@api-info-puntos-dgt-tp10l.mongodb.net/test?retryWrites=true&w=majority")
 db = client['puntos']
 test = db['mytable']
+
+config = yaml.safe_load(open('api.yml'))
 
 # ========================================
 # Tokens de la app
@@ -41,7 +40,7 @@ def valid_auth(func):
     def func_wrapper(*args, **kwargs):
         if 'x-api-key' not in request.headers:
             return("Credentials not present in request", 401)
-        elif request.headers['x-api-key'] != "7jZWTMxXYjFZJazqRyJGYvq8Ghp4mW88":
+        elif request.headers['x-api-key'] != config['api_key']:
             return ("Credentials not valid", 401)
         else:
             return func(*args, **kwargs)
