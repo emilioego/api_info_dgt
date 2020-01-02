@@ -1,7 +1,15 @@
 language: python
 
-services: mongodb
+services:
+  - mongodb
 
-before_install:
-  - gem install rake
+install: pip install -r requirement.txt
 
+script: pytest
+
+deploy:
+  provider: pypi
+  user: api
+  password:
+    secure: eiWee8ep9due4deeshoa8Peichai8Eih
+  
