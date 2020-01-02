@@ -4,6 +4,6 @@ python:
 install:
 - pip install -r requirement.txt
 services:
-  -mongodb
+- mongodb
 script:
 - python -m unittest
