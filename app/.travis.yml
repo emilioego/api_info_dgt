@@ -1,16 +1,13 @@
-# Config file for automatic testing at travis-ci.org
-sudo: false  
 language: python
 python:
-  - 2.7
-  - 3.4
-  - 3.5
-  - 3.6
-services:
-  - docker
-  - mongodb
-
-install: 
-  npm install
-
-script: flask test
+- '3.6'
+install:
+- pip install -r requirements.txt
+script:
+- python -m unittest
+deploy:
+  provider: script
+  skip_cleanup: true
+  script: 'bash bin/deploy'
+  on:
+    branch: master
