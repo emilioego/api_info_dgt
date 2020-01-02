@@ -109,7 +109,7 @@ class Puntos(Resource):
     def post(self):
         #Recogemos los parametros del JSON
         dni = request.json['dni']
-        timestamp=datetime.datetime.utcnow()
+        timestamp=datetime.utcnow()
         #Lanza una excepción si el DNI ya existe en la base de datos
         comprobarDNI(dni,True)      
         #Insertamos el nuevo registro
