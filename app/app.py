@@ -16,6 +16,7 @@ import flask
 from flask import json, request, jsonify,abort,make_response
 from functools import wraps
 import ssl
+from flask_httpauth import HTTPBasicAuth,HTTPTokenAuth
 
 # =========================
 # Extensions initialization
@@ -26,10 +27,25 @@ context.load_cert_chain('server.crt', 'server.key')
 ####
 app = Flask(__name__)
 api = Api(app,prefix="/api/v1",version='1.0',title='API Puntos DGT',description='A simple API about points in the DGT',default_mediatype='application/json',doc='/api/swagger')
+auth = HTTPTokenAuth(scheme='Token')
 client = MongoClient("mongodb+srv://emilioego:Orellana15@api-info-puntos-dgt-tp10l.mongodb.net/test?retryWrites=true&w=majority")
 db = client['puntos']
 test = db['mytable']
 
+# ========================================
+# Tokens de la app
+# ========================================
+
+def valid_auth(func):
+    @wraps(func)
+    def func_wrapper(*args, **kwargs):
+        if 'x-api-key' not in request.headers:
+            return("Credentials not present in request", 401)
+        elif request.headers['x-api-key'] != "7jZWTMxXYjFZJazqRyJGYvq8Ghp4mW88":
+            return ("Credentials not valid", 401)
+        else:
+            return func(*args, **kwargs)
+    return func_wrapper
 # ========================================
 # Métodos para lanzamiento de excepciones
 # ========================================
@@ -81,6 +97,7 @@ class Puntos(Resource):
         self.timestamp = datetime.utcnow()
     
     #Se obtiene el estado más actual de los puntos de cada conductor
+    @valid_auth
     def get(self):
         lista=[]
         #Selecciona los dnis únicos que existen en la base de datos
@@ -94,7 +111,8 @@ class Puntos(Resource):
         #Si no ponemos nada, devuelve por defecto un 200(OK)
         return jsonify({'result' : lista})
 
-    # Inserta los puntos de un nuevo conductor 
+    # Inserta los puntos de un nuevo conductor
+    @valid_auth 
     def post(self):
         #Recogemos los parametros del JSON
         dni = request.json['dni']
@@ -115,6 +133,7 @@ class Puntos(Resource):
 
 
     #Borra del sistema los puntos de un conductor específico
+    @valid_auth
     def delete(self):
         dni = flask.request.args.get("dni") 
         #Lanza una excepción si el DNI no existe enl la base de datos
@@ -127,6 +146,7 @@ class Puntos(Resource):
 
 class PuntosConductor(Resource):
     #Trae la información de los puntos de un conductor en concreto
+    @valid_auth
     def get(self,dni):
         output = [doc for doc in test.find({"dni":dni})]
         #Lanza una excepción si el DNI no existe en la base de datos
@@ -137,6 +157,7 @@ class PuntosConductor(Resource):
 
 
     #Actualiza el DNI de un conductor específico
+    @valid_auth
     def put(self,dni):
         dni_nuevo=flask.request.args.get("dni")
         #Lanza una excepción si el DNI que quiero modificar no existe en la base de datos
@@ -147,6 +168,7 @@ class PuntosConductor(Resource):
        
 
 class Historial(Resource):
+    @valid_auth
     def get(self,dni):
         records = [doc for doc in test.find({"dni":dni}).sort("date", -1)]
         #Lanza una excepción si el DNI no existe en la base de datos
@@ -155,6 +177,7 @@ class Historial(Resource):
         return jsonify({'result' : records})
 
 class Multa(Resource):
+    @valid_auth
     def post(self,dni):
         #Nos traemos los params
         npuntos = flask.request.args.get("npuntos")
@@ -179,6 +202,7 @@ class Multa(Resource):
 
 
 class Recupera(Resource):
+    @valid_auth
     def post(self,dni):
         #Nos traemos los params
         npuntos = flask.request.args.get("npuntos")
