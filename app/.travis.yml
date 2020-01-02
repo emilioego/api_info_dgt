@@ -1,13 +1,9 @@
 language: python
 python:
-- '3.6'
+- '3.8'
 install:
-- pip install -r requirements.txt
+- pip install -r requirement.txt
+services:
+  -mongodb
 script:
 - python -m unittest
-deploy:
-  provider: script
-  skip_cleanup: true
-  script: 'bash bin/deploy'
-  on:
-    branch: master
