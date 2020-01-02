@@ -88,12 +88,6 @@ def checkDB():
 # =========================
 
 class Puntos(Resource):
-    def __init__(self,dni):
-        self.puntos_actuales = 8
-        self.dni = dni
-        self.puntos_perdidos = 0
-        self.puntos_recuperados = 0
-        self.timestamp = datetime.utcnow()
     
     #Se obtiene el estado más actual de los puntos de cada conductor
     @valid_auth
@@ -111,7 +105,7 @@ class Puntos(Resource):
         return jsonify({'result' : lista})
 
     # Inserta los puntos de un nuevo conductor
-    @valid_auth 
+    @valid_auth
     def post(self):
         #Recogemos los parametros del JSON
         dni = request.json['dni']
@@ -227,8 +221,8 @@ class Recupera(Resource):
 api.add_resource(Historial,'/puntos/historial/<dni>')
 api.add_resource(Puntos,'/puntos')
 api.add_resource(PuntosConductor,'/puntos/<dni>')
-api.add_resource(Multa,'/puntos/<dni>/multa/')
-api.add_resource(Recupera,'/puntos/<dni>/recupera/')
+api.add_resource(Multa,'/puntos/<dni>/multa')
+api.add_resource(Recupera,'/puntos/<dni>/recupera')
 
 if __name__ == '__main__':
     app.run(debug=False,ssl_context=context)
