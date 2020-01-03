@@ -27,4 +27,4 @@ install:
 services:
   - mongodb
 
-script: python app/app.py
+script: pytest
