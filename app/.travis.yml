@@ -1,15 +1,17 @@
-language: python
+sudo: required
+language: node_js
+node_js:
+  - "9"
 
 services:
+  - docker
   - mongodb
 
-install: pip install -r requirement.txt
-
-script: pytest
+install: npm install
 
 deploy:
-  provider: pypi
-  user: api
-  password:
-    secure: eiWee8ep9due4deeshoa8Peichai8Eih
+  provider: script
+  skip_cleanup: true
+  branch: master
+
   

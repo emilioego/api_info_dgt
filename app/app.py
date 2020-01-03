@@ -15,6 +15,7 @@ import json
 from bson import json_util, ObjectId
 from functools import wraps
 import ssl
+import functools
 
 # =========================
 # Extensions initialization
@@ -49,6 +50,22 @@ def valid_auth(func):
 # Métodos para lanzamiento de excepciones
 # ========================================
 #Método que comprueba si un DNI existe o no en la base de datos 
+
+''' def comprobarDNI(found):
+    def actual_decorator(func):
+        @functools.wraps(func)
+        def wrapper(*args, **kwargs):
+            dni = request.json['dni']
+            output = [doc for doc in test.find({"dni":dni})]
+            if output:
+                if found:
+                    return abort(400,'El DNI del conductor especificado ya existe en la base de datos')  
+            else:
+                if not found:
+                    return abort(400,'El DNI del conductor especificado no se encuentra en la base de datos')
+        return wrapper
+    return actual_decorator '''
+
 def comprobarDNI(dni,found):
     output = [doc for doc in test.find({"dni":dni})]
     if output:
@@ -106,6 +123,7 @@ class Puntos(Resource):
 
     # Inserta los puntos de un nuevo conductor
     @valid_auth
+    #@comprobarDNI(True)
     def post(self):
         #Recogemos los parametros del JSON
         dni = request.json['dni']

@@ -1,0 +1,25 @@
+{
+  "name": "puntos",
+  "version": "1.0.0",
+  "description": "API Rest para la asignatura de FIS del Máster en Ingeniería del Software: Cloud, Datos y Gestión TI",
+  "main": "index.js",
+  "dependencies": {
+    "jest": "^24.9.0",
+    "jest-extended": "^0.11.2",
+    "supertest": "^4.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/emilioego/api_info_dgt.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/emilioego/api_info_dgt/issues"
+  },
+  "homepage": "https://github.com/emilioego/api_info_dgt#readme"
+}
