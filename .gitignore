@@ -9,6 +9,5 @@ Scripts/
 node_modules/
 .devcontainer
 .vscode
-.jest.config.js
 
 
