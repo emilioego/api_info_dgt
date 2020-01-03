@@ -6,7 +6,6 @@ cffi==1.13.2
 Click==7.0
 colorama==0.4.1
 cryptography==2.8
-dataclasses==0.7
 defusedxml==0.6.0
 dnspython==1.16.0
 email-validator==1.0.5
