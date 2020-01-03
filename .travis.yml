@@ -27,4 +27,4 @@ install:
 services:
   - mongodb
 
-script: python3 app/app.py || python app/app.py
+script: python app/app.py
