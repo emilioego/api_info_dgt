@@ -1,1 +1,1 @@
-web: gunicorn app:app
+web: gunicorn --keyfile server.key --certfile server.crt --pythonpath app app.py
