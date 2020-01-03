@@ -10,7 +10,7 @@ jobs:
         - choco install python --version 3.8.0
         - python -m pip install pyyaml
         - python -m pip install --upgrade pip
-        #- python -m pip install -r requirements.txt
+        - python -m pip install -r requirements.txt
         
 
       env: PATH=/c/Python38:/c/Python38/Scripts:$PATH
@@ -22,4 +22,4 @@ install:
 services:
   - mongodb
 
-script: python3 app.py || python app.py
+script: python3 app/app.py || python app/app.py
