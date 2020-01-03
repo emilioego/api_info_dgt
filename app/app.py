@@ -242,5 +242,7 @@ api.add_resource(PuntosConductor,'/puntos/<dni>')
 api.add_resource(Multa,'/puntos/<dni>/multa')
 api.add_resource(Recupera,'/puntos/<dni>/recupera')
 
+#ssl_context=context
+
 if __name__ == '__main__':
-    app.run(debug=False,ssl_context=context)
+    app.run(debug=False)
