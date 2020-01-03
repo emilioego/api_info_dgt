@@ -15,7 +15,6 @@ jobs:
         - python -m pip install pymongo
         - python -m pip install datetime
         - python -m pip install bson
-        - python -m pip install json
         - python -m pip install functools
         - python -m pip install ssl
         
