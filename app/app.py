@@ -21,11 +21,11 @@ import functools
 # Extensions initialization
 # =========================
 ###Añadimos SSL para usar HTTPS###
-#context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-#context.load_cert_chain('server.crt', 'server.key')
+context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
+context.load_cert_chain('server.crt', 'server.key')
 ####
 app = Flask(__name__)
-api = Api(app,prefix="/api/v1",version='1.0',title='API Puntos DGT',description='A simple API about points in the DGT',default_mediatype='application/json',doc='/')
+api = Api(app,prefix="/api/v1",version='1.0',title='API Puntos DGT',description='A simple API about points in the DGT',default_mediatype='application/json',doc='/api/swagger')
 client = MongoClient("mongodb+srv://api:QzEbuGslcPlAy7KN@api-info-puntos-dgt-tp10l.mongodb.net/test?retryWrites=true&w=majority")
 db = client['puntos']
 test = db['mytable']
@@ -242,7 +242,5 @@ api.add_resource(PuntosConductor,'/puntos/<dni>')
 api.add_resource(Multa,'/puntos/<dni>/multa')
 api.add_resource(Recupera,'/puntos/<dni>/recupera')
 
-#ssl_context=context
-
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=False,ssl_context=context)
