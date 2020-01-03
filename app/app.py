@@ -30,7 +30,10 @@ client = MongoClient("mongodb+srv://api:QzEbuGslcPlAy7KN@api-info-puntos-dgt-tp1
 db = client['puntos']
 test = db['mytable']
 
-config = yaml.safe_load(open('api.yml'))
+try:
+    config = yaml.safe_load(open('api.yml'))
+except:
+    config = yaml.safe_load(open('../api.yml'))
 
 # ========================================
 # Tokens de la app
