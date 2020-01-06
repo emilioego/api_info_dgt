@@ -62,7 +62,7 @@ def get_history_error():
         'x-api-key': 'eiWee8ep9due4deeshoa8Peichai8Eih'
     }
     response = client.delete(url, headers=mock_request_headers)
-    assert response.status_code == 400
+    assert response.status_code == 404
 
 def test_delete_route_success(): 
     client = app.test_client()

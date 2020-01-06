@@ -76,7 +76,7 @@ def comprobarDNI(dni,found):
             return abort(400,'El DNI del conductor ya existe en la BD')  
     else:
         if not found:
-            return abort(400,'El DNI del conductor no se encuentra en la BD')    
+            return abort(404,'El DNI del conductor no se encuentra en la BD')    
 
 def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos):
 
