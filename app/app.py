@@ -73,10 +73,10 @@ def comprobarDNI(dni,found):
     output = [doc for doc in test.find({"dni":dni})]
     if output:
         if found:
-            return abort(400,'El DNI del conductor especificado ya existe en la base de datos')  
+            return abort(400,'El DNI del conductor ya existe en la BD')  
     else:
         if not found:
-            return abort(400,'El DNI del conductor especificado no se encuentra en la base de datos')    
+            return abort(400,'El DNI del conductor no se encuentra en la BD')    
 
 def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos):
 
@@ -140,16 +140,7 @@ class Puntos(Resource):
         #Devolvemos código de estado 201(creado)
         return make_response(jsonify({'result' : records}),201)
 
-    #Borra del sistema los puntos de un conductor específico
-    @valid_auth
-    def delete(self):
-        dni = flask.request.args.get("dni") 
-        #Lanza una excepción si el DNI no existe enl la base de datos
-        comprobarDNI(dni,False)  
-        #Borramos el registro  
-        test.remove({'dni' : dni })
-        #Devolvemos un código 204(No content)
-        return "Registro eliminado correctamente",204
+   
        
 
 class PuntosConductor(Resource):
@@ -163,18 +154,29 @@ class PuntosConductor(Resource):
         #Devuelve un estado 200(OK) por defecto
         return jsonify({'result' : output})
 
+    #Borra del sistema los puntos de un conductor específico
+    @valid_auth
+    def delete(self,dni):
+        #dni = flask.request.args.get("dni") 
+        #Lanza una excepción si el DNI no existe enl la base de datos
+        comprobarDNI(dni,False)  
+        #Borramos el registro  
+        test.delete_many({'dni' : dni })
+        #Devolvemos un código 204(No content)
+        return "Registro eliminado correctamente",204
+
 
     #Actualiza el DNI de un conductor específico
     @valid_auth
     def put(self,dni):
-        dni_nuevo=flask.request.args.get("dni")
+        dni_nuevo=request.json['dni']
         #Lanza una excepción si el DNI que quiero modificar no existe en la base de datos
         comprobarDNI(dni,False)  
-        test.update({'dni': dni},{'$set': {'dni': dni_nuevo} }, upsert=False, multi=False)
+        test.update_many({'dni': dni},{'$set': {'dni': dni_nuevo} }, upsert=False)
         records = [doc for doc in test.find({"dni":dni_nuevo})]
         [doc.pop('_id',None) for doc in records]
-        #Devolvemos un código 201(Creado)
-        return make_response(jsonify({'result' : records}),201)
+        #Devolvemos un código 200(OK)
+        return make_response(jsonify({'result' : records}))
        
 
 class Historial(Resource):
@@ -208,7 +210,8 @@ class Multa(Resource):
                                 'puntos_perdidos': records[0]['puntos_perdidos'], 
                                 'puntos_recuperados': records[0]['puntos_recuperados'],
                                  'date' : timestamp })
-        return jsonify({'result' : records[0]})
+        return make_response(jsonify({'result' : records[0]}),201)
+
 
 
 class Recupera(Resource):
@@ -233,7 +236,7 @@ class Recupera(Resource):
                                 'puntos_perdidos': records[0]['puntos_perdidos'], 
                                 'puntos_recuperados': records[0]['puntos_recuperados'],
                                  'date' : timestamp })
-        return jsonify({'result' : records[0]})
+        return make_response(jsonify({'result' : records[0]}),201)
 
 
 # =========================
