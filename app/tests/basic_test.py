@@ -21,7 +21,7 @@ def test_get_auth():
     response = client.get(url, headers=headers)
     assert response.status_code == 200
 
-"""def test_post_route__success(): 
+def test_post_route_success(): 
     client = app.test_client()
     url = '/api/v1/puntos'
     mock_request_headers = {
@@ -30,7 +30,29 @@ def test_get_auth():
     mock_request_data = {
         'dni': '20067771F'
         }
-    mock_request_data_string = "{'dni': '20067771F'}"
-    print(json.dumps(mock_request_data))
-    response = client.post(url, data=mock_request_data_string, headers=mock_request_headers)
-    assert response.status_code == 201"""
+    response = client.post(url, data=json.dumps(mock_request_data), headers=mock_request_headers)
+    assert response.status_code == 201
+    
+def test_put_route_success(): 
+    client = app.test_client()
+    url = '/api/v1/puntos/20067461F'
+    mock_request_headers = {
+        'x-api-key': 'eiWee8ep9due4deeshoa8Peichai8Eih'
+    }
+    mock_request_data = {
+        'dni': '20067771F'
+        }
+    response = client.put(url, data=json.dumps(mock_request_data), headers=mock_request_headers)
+    assert response.status_code == 201
+
+"""def test_delete_route_success(): 
+    client = app.test_client()
+    url = '/api/v1/puntos'
+    mock_request_headers = {
+        'x-api-key': 'eiWee8ep9due4deeshoa8Peichai8Eih'
+    }
+    mock_request_data = {
+        'dni': '20067771F'
+        }
+    response = client.delete(url, data=json.dumps(mock_request_data), headers=mock_request_headers)
+    assert response.status_code == 200"""

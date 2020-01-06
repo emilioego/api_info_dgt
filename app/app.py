@@ -129,7 +129,9 @@ class Puntos(Resource):
     #@comprobarDNI(True)
     def post(self):
         #Recogemos los parametros del JSON
-        dni = request.json['dni']
+        data_string = request.get_data()
+        data = json.loads(data_string)
+        dni = data.get('dni')
         timestamp=datetime.utcnow()
         #Lanza una excepción si el DNI ya existe en la base de datos
         comprobarDNI(dni,True)      
