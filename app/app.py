@@ -171,7 +171,9 @@ class PuntosConductor(Resource):
     #Actualiza el DNI de un conductor específico
     @valid_auth
     def put(self,dni):
-        dni_nuevo=request.json['dni']
+        data_string = request.get_data()
+        data = json.loads(data_string)
+        dni_nuevo = data.get('dni')
         #Lanza una excepción si el DNI que quiero modificar no existe en la base de datos
         comprobarDNI(dni,False)  
         test.update_many({'dni': dni},{'$set': {'dni': dni_nuevo} }, upsert=False)

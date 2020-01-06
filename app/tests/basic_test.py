@@ -21,21 +21,21 @@ def test_get_auth():
     response = client.get(url, headers=headers)
     assert response.status_code == 200
 
-def test_post_route_success(): 
+def test_post_route__success(): 
     client = app.test_client()
     url = '/api/v1/puntos'
     mock_request_headers = {
         'x-api-key': 'eiWee8ep9due4deeshoa8Peichai8Eih'
     }
     mock_request_data = {
-        'dni': '20067771F'
+        'dni': '20067731F'
         }
     response = client.post(url, data=json.dumps(mock_request_data), headers=mock_request_headers)
     assert response.status_code == 201
-    
+  
 def test_put_route_success(): 
     client = app.test_client()
-    url = '/api/v1/puntos/20067461F'
+    url = '/api/v1/puntos/20067731F'
     mock_request_headers = {
         'x-api-key': 'eiWee8ep9due4deeshoa8Peichai8Eih'
     }
@@ -43,16 +43,32 @@ def test_put_route_success():
         'dni': '20067771F'
         }
     response = client.put(url, data=json.dumps(mock_request_data), headers=mock_request_headers)
-    assert response.status_code == 201
-
-"""def test_delete_route_success(): 
+    print(response)
+    assert response.status_code == 200
+    
+def get_history_success(): 
     client = app.test_client()
-    url = '/api/v1/puntos'
+    url = '/api/v1/puntos/historial/20067771F'
     mock_request_headers = {
         'x-api-key': 'eiWee8ep9due4deeshoa8Peichai8Eih'
     }
-    mock_request_data = {
-        'dni': '20067771F'
-        }
-    response = client.delete(url, data=json.dumps(mock_request_data), headers=mock_request_headers)
-    assert response.status_code == 200"""
+    response = client.delete(url, headers=mock_request_headers)
+    assert response.status_code == 200
+
+def get_history_error(): 
+    client = app.test_client()
+    url = '/api/v1/puntos/historial/20063371F'
+    mock_request_headers = {
+        'x-api-key': 'eiWee8ep9due4deeshoa8Peichai8Eih'
+    }
+    response = client.delete(url, headers=mock_request_headers)
+    assert response.status_code == 400
+
+def test_delete_route_success(): 
+    client = app.test_client()
+    url = '/api/v1/puntos/20067771F'
+    mock_request_headers = {
+        'x-api-key': 'eiWee8ep9due4deeshoa8Peichai8Eih'
+    }
+    response = client.delete(url, headers=mock_request_headers)
+    assert response.status_code == 204
