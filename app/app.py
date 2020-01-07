@@ -90,18 +90,6 @@ def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos):
     else:
         if nPuntos<=0:
             return abort(400,'El número de puntos debe ser mayor que 0')
-
-
-# =========================
-# Metodos
-# =========================
-def checkDB():
-    try:
-        print ('ego')
-        pd = client['puntos']
-        return True
-    except:
-        return False
     
 # =========================
 # Clases
@@ -209,7 +197,7 @@ class Multa(Resource):
         records[0]['puntos_actuales'] = punto_nuevo
         records[0]['puntos_perdidos'] = punto_perdido_nuevo
         timestamp=datetime.utcnow()
-        test.insert({'dni': records[0]['dni'],
+        test.insert_one({'dni': records[0]['dni'],
                                 'puntos_actuales': records[0]['puntos_actuales'], 
                                 'puntos_perdidos': records[0]['puntos_perdidos'], 
                                 'puntos_recuperados': records[0]['puntos_recuperados'],
@@ -235,7 +223,7 @@ class Recupera(Resource):
         records[0]['puntos_actuales'] = punto_nuevo
         records[0]['puntos_recuperados'] = punto_recuperado_nuevo
         timestamp=datetime.utcnow()
-        test.insert({'dni': records[0]['dni'],
+        test.insert_one({'dni': records[0]['dni'],
                                 'puntos_actuales': records[0]['puntos_actuales'], 
                                 'puntos_perdidos': records[0]['puntos_perdidos'], 
                                 'puntos_recuperados': records[0]['puntos_recuperados'],
