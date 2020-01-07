@@ -10,5 +10,6 @@ node_modules/
 .devcontainer
 .vscode
 .pytest_cache
+app/tests/__pycache__
 
 
