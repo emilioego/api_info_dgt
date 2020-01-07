@@ -9,5 +9,6 @@ Scripts/
 node_modules/
 .devcontainer
 .vscode
+.pytest_cache
 
 
