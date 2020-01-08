@@ -20,10 +20,7 @@ import functools
 # =========================
 # Extensions initialization
 # =========================
-###Añadimos SSL para usar HTTPS###
-#context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-#context.load_cert_chain('server.crt', 'server.key')
-####
+
 authorizations = {
     'apikey': {
         'type': 'apiKey',
@@ -255,8 +252,6 @@ api.add_resource(Puntos,'/puntos')
 api.add_resource(PuntosConductor,'/puntos/<dni>')
 api.add_resource(Multa,'/puntos/<dni>/multa')
 api.add_resource(Recupera,'/puntos/<dni>/recupera')
-
-#,ssl_context=context
 
 if __name__ == '__main__':
     app.run(debug=False)
