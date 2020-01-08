@@ -22,3 +22,6 @@ ADD . /app
 EXPOSE 5000
 
 CMD flask run --host=0.0.0.0
+
+# docker build -t my_docker_flask:latest .
+# docker run -d -p 5000:5000 my_docker_flask:latest
