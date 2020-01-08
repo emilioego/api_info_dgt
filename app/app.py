@@ -80,16 +80,28 @@ def comprobarDNI(dni,found):
 
 def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos):
 
-    if(puntos_actuales is not None and puntos_perdidos is not None and puntos_recuperados is not None):
-        if puntos_actuales<=0:
+    if nPuntos<=0:
+            return abort(400,'El número de puntos debe ser mayor que 0')
+
+    if puntos_actuales<=0:
             return abort(400,'Los puntos actuales del conductor deben ser mayor que 0')
 
-        elif puntos_perdidos<0 or puntos_recuperados<0 and nPuntos:
-            return abort(400,'Los puntos perdidos o recuperados del conductor deben ser mayor o igual que 0')
+    if puntos_perdidos is not None :
 
-    else:
-        if nPuntos<=0:
-            return abort(400,'El número de puntos debe ser mayor que 0')
+        if puntos_perdidos<=0:
+            return abort(400,'Los puntos perdidos del conductor deben ser mayor que 0')
+
+    else :
+
+        if puntos_recuperados<=0:
+            return abort(400,'Los puntos recuperados del conductor deben ser mayor o igual que 0')
+        
+        if puntos_actuales>15:
+            return abort(400,'Los puntos actuales del conductor no pueden ser mayor que 15')
+
+    
+        
+
     
 # =========================
 # Clases
@@ -129,9 +141,7 @@ class Puntos(Resource):
         [doc.pop('_id',None) for doc in records]
         #Devolvemos código de estado 201(creado)
         return make_response(jsonify({'result' : records}),201)
-
-   
-       
+  
 
 class PuntosConductor(Resource):
     #Trae la información de los puntos de un conductor en concreto
@@ -187,8 +197,7 @@ class Multa(Resource):
         npuntos = flask.request.args.get("npuntos")
         #Lanza una excepción si el DNI no existe en la base de datos
         comprobarDNI(dni,False)  
-        #Lanza una excepción si el número de puntos no cumple las restricciones
-        comprobarPuntos(None,None,None,int(npuntos))
+        
         #Hacemos GET del último record
         records = [doc for doc in test.find({"dni":dni}).sort("date", -1)]
         [doc.pop('_id',None) for doc in records]
@@ -196,6 +205,8 @@ class Multa(Resource):
         punto_perdido_nuevo = int(records[0].get('puntos_perdidos')) + int(npuntos)
         records[0]['puntos_actuales'] = punto_nuevo
         records[0]['puntos_perdidos'] = punto_perdido_nuevo
+        #Lanza una excepción si el número de puntos no cumple las restricciones
+        comprobarPuntos(punto_nuevo,punto_perdido_nuevo,None,int(npuntos))
         timestamp=datetime.utcnow()
         test.insert_one({'dni': records[0]['dni'],
                                 'puntos_actuales': records[0]['puntos_actuales'], 
@@ -212,9 +223,7 @@ class Recupera(Resource):
         #Nos traemos los params
         npuntos = flask.request.args.get("npuntos")
         #Lanza una excepción si el DNI no existe en la base de datos
-        comprobarDNI(dni,False)  
-        #Lanza una excepción si el número de puntos no cumple las restricciones
-        comprobarPuntos(None,None,None,int(npuntos))
+        comprobarDNI(dni,False)          
         #Hacemos GET del último record
         records = [doc for doc in test.find({"dni":dni}).sort("date", -1)]
         [doc.pop('_id',None) for doc in records]
@@ -222,6 +231,8 @@ class Recupera(Resource):
         punto_recuperado_nuevo = int(records[0].get('puntos_recuperados')) + int(npuntos)
         records[0]['puntos_actuales'] = punto_nuevo
         records[0]['puntos_recuperados'] = punto_recuperado_nuevo
+        #Lanza una excepción si el número de puntos no cumple las restricciones
+        comprobarPuntos(punto_nuevo,None,punto_recuperado_nuevo,int(npuntos))
         timestamp=datetime.utcnow()
         test.insert_one({'dni': records[0]['dni'],
                                 'puntos_actuales': records[0]['puntos_actuales'], 
