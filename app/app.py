@@ -100,9 +100,6 @@ def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos):
             return abort(400,'Los puntos actuales del conductor no pueden ser mayor que 15')
 
     
-        
-
-    
 # =========================
 # Clases
 # =========================
