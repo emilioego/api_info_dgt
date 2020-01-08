@@ -6,18 +6,18 @@ LABEL Author="Emilio Garcia & Lucia Falcon"
 LABEL E-mail="emilioego@hotmail.com;lucfalgar@gmail.com"
 LABEL version="1.0"
 
-ENV PYTHONDONTWRITEBYTECODE 1
 ENV FLASK_APP "app/app.py"
 ENV FLASK_ENV "development"
-ENV FLASK_DEBUG False
+ENV FLASK_DEBUG True
 
-COPY . /app
-
+RUN mkdir /app
 WORKDIR /app
+
+COPY . /app/
 
 RUN pip install -r requirements.txt
 
-ENTRYPOINT ["python"]
+ADD . /app
 
 EXPOSE 5000
 
