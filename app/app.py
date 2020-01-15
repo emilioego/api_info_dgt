@@ -139,6 +139,7 @@ class Puntos(Resource):
 
     # Inserta los puntos de un nuevo conductor
     @valid_auth
+    @circuit(failure_threshold=10, expected_exception=ConnectionError)
     #@comprobarDNI(True)
     def post(self):
         #Recogemos los parametros del JSON
@@ -158,6 +159,7 @@ class Puntos(Resource):
 
 class PuntosConductor(Resource):
     #Trae la información de los puntos de un conductor en concreto
+    @circuit(failure_threshold=10, expected_exception=ConnectionError)
     @valid_auth
     def get(self,dni):
         output = [doc for doc in test.find({"dni":dni})]
@@ -168,6 +170,7 @@ class PuntosConductor(Resource):
         return jsonify({'result' : output})
 
     #Borra del sistema los puntos de un conductor específico
+    @circuit(failure_threshold=10, expected_exception=ConnectionError)
     @valid_auth
     def delete(self,dni):
         #dni = flask.request.args.get("dni") 
@@ -180,6 +183,7 @@ class PuntosConductor(Resource):
 
 
     #Actualiza el DNI de un conductor específico
+    @circuit(failure_threshold=10, expected_exception=ConnectionError)
     @valid_auth
     def put(self,dni):
         data_string = request.get_data()
@@ -196,6 +200,7 @@ class PuntosConductor(Resource):
 
 class Historial(Resource):
     @valid_auth
+    @circuit(failure_threshold=10, expected_exception=ConnectionError)
     def get(self,dni):
         records = [doc for doc in test.find({"dni":dni}).sort("date", -1)]
         #Lanza una excepción si el DNI no existe en la base de datos
@@ -204,6 +209,7 @@ class Historial(Resource):
         return jsonify({'result' : records})
 
 class Multa(Resource):
+    @circuit(failure_threshold=10, expected_exception=ConnectionError)
     @valid_auth
     def post(self,dni):
         #Nos traemos los params
@@ -231,6 +237,7 @@ class Multa(Resource):
 
 
 class Recupera(Resource):
+    @circuit(failure_threshold=10, expected_exception=ConnectionError)
     @valid_auth
     def post(self,dni):
         #Nos traemos los params
