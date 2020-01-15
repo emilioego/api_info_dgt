@@ -16,6 +16,13 @@ from bson import json_util, ObjectId
 from functools import wraps
 import ssl
 import functools
+from circuitbreaker import circuit
+from os.path import join, dirname
+from dotenv import load_dotenv
+import sys
+import os.path
+sys.path.append(
+    os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
 # =========================
 # Extensions initialization
@@ -35,10 +42,13 @@ client = MongoClient("mongodb+srv://api:QzEbuGslcPlAy7KN@api-info-puntos-dgt-tp1
 db = client['puntos']
 test = db['mytable']
 
-try:
-    config = yaml.safe_load(open('api.yml'))
-except:
-    config = yaml.safe_load(open('../api.yml'))
+
+api_key = os.environ.get('PRIVATE_API_KEY', None)
+if api_key == None:
+    dotenv_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '.env'))
+    load_dotenv(dotenv_path)    
+    api_key = os.getenv('PRIVATE_API_KEY')
+
 
 # ========================================
 # Tokens de la app
@@ -49,7 +59,7 @@ def valid_auth(func):
     def func_wrapper(*args, **kwargs):
         if 'x-api-key' not in request.headers:
             return("Credentials not present in request", 401)
-        elif request.headers['x-api-key'] != config['api_key']:
+        elif request.headers['x-api-key'] != api_key:
             return ("Credentials not valid", 401)
         else:
             return func(*args, **kwargs)
@@ -113,6 +123,7 @@ class Puntos(Resource):
     
     #Se obtiene el estado más actual de los puntos de cada conductor
     @valid_auth
+    @circuit(failure_threshold=10, expected_exception=ConnectionError)
     def get(self):
         lista=[]
         #Selecciona todos los dnis únicos existentes
