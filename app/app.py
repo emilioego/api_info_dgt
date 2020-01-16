@@ -146,7 +146,7 @@ class Puntos(Resource):
         data_string = request.get_data()
         data = json.loads(data_string)
         dni = data.get('dni')
-        timestamp=datetime.utcnow()
+        timestamp=datetime.now()
         #Lanza una excepción si el DNI ya existe en la base de datos
         comprobarDNI(dni,True)      
         #Insertamos el nuevo registro
