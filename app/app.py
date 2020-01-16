@@ -19,7 +19,7 @@ import functools
 from circuitbreaker import circuit
 from os.path import join, dirname
 from dotenv import load_dotenv
-#import requests
+import requests
 import sys
 import os.path
 sys.path.append(
@@ -103,8 +103,6 @@ def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos,d
     if(puntos_actuales==0):
             #requestPuntosCarnets(dni)
             return abort(400,'Los puntos actuales del conductor han llegado a 0, se le será retirado el carnet')
-
-        
 
     if puntos_actuales<0:
             return abort(400,'Los puntos actuales del conductor deben ser mayor que 0')
