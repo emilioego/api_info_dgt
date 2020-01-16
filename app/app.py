@@ -54,6 +54,23 @@ if api_key == None:
 
 
 # ========================================
+# Llamada externa
+# ========================================
+def external_call():
+    res = 0
+    url = "https://dawn2k-random-german-profiles-and-names-generator-v1.p.rapidapi.com/"
+    querystring = {"count":"1","gender":"b","maxage":"40","minage":"30","cc":"all","email":"gmail.com%2Cyahoo.com","pwlen":"12","ip":"a","phone":"l%2Ct%2Co","uuid":"false","lic":"false","color":"false","seed":"helloworld","images":"false","format":"json"}
+    headers = {
+        'x-rapidapi-host': "dawn2k-random-german-profiles-and-names-generator-v1.p.rapidapi.com",
+        'x-rapidapi-key': "6c93257d08mshebdb21165c37f32p1c92bfjsnfb538fb3ad42"
+    }
+    response = requests.request("GET", url, headers=headers, params=querystring)
+    x = json.loads(response.text)
+    res = x[0].get('birthday')
+    print(res)
+    return res
+
+# ========================================
 # Tokens de la app
 # ========================================
 
@@ -166,9 +183,10 @@ class Puntos(Resource):
         dni = data.get('dni')
         timestamp=datetime.now()
         #Lanza una excepción si el DNI ya existe en la base de datos
-        comprobarDNI(dni,True)      
+        comprobarDNI(dni,True)
+        birthday = external_call()      
         #Insertamos el nuevo registro
-        test.insert_one({'dni': dni,'puntos_actuales': 8, 'puntos_perdidos': 0, 'puntos_recuperados': 0, 'date' : timestamp })
+        test.insert_one({'dni': dni,'puntos_actuales': 8, 'puntos_perdidos': 0, 'puntos_recuperados': 0, 'date' : timestamp , 'birthday' : birthday})
         records = [doc for doc in test.find({"dni":dni})]
         [doc.pop('_id',None) for doc in records]
         #Devolvemos código de estado 201(creado)

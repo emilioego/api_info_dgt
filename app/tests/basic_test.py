@@ -6,6 +6,18 @@ from app import app
 import flask_api.request
 from flask import json, Flask
 
+def test_post_dni_success(): 
+    client = app.test_client()
+    url = '/api/v1/puntos'
+    mock_request_headers = {
+        'x-api-key': 'eiWee8ep9due4deeshoa8Peichai8Eih'
+    }
+    mock_request_data = {
+        'dni': '20154021M'
+        }
+    response = client.post(url, data=json.dumps(mock_request_data), headers=mock_request_headers)
+    assert response.status_code == 201
+
 def test_multa_puntos():
     client = app.test_client()
     url = '/api/v1/puntos/20154021M/multa?npuntos=5'
@@ -85,6 +97,15 @@ def test_put_route_success():
 def test_delete_route_success(): 
     client = app.test_client()
     url = '/api/v1/puntos/20067771F'
+    mock_request_headers = {
+        'x-api-key': 'eiWee8ep9due4deeshoa8Peichai8Eih'
+    }
+    response = client.delete(url, headers=mock_request_headers)
+    assert response.status_code == 204
+
+def test_delete_original_success(): 
+    client = app.test_client()
+    url = '/api/v1/puntos/20154021M'
     mock_request_headers = {
         'x-api-key': 'eiWee8ep9due4deeshoa8Peichai8Eih'
     }
