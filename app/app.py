@@ -45,7 +45,7 @@ client = MongoClient("mongodb+srv://api:QzEbuGslcPlAy7KN@api-info-puntos-dgt-tp1
 db = client['puntos']
 test = db['mytable']
 
-
+#API_KEY ENVIRONMENT
 api_key = os.environ.get('PRIVATE_API_KEY', None)
 if api_key == None:
     dotenv_path = os.path.abspath(os.path.join(os.path.dirname( __file__ ), '..', '.env'))
