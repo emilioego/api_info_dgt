@@ -101,7 +101,7 @@ def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos,d
             return abort(400,'El número de puntos debe ser mayor que 0')
 
     if(puntos_actuales==0):
-            #requestPuntosCarnets(dni)
+            requestPuntosCarnets(dni)
             return abort(400,'Los puntos actuales del conductor han llegado a 0, se le será retirado el carnet')
 
     if puntos_actuales<0:
@@ -120,16 +120,16 @@ def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos,d
         if puntos_actuales>15:
             return abort(400,'Los puntos actuales del conductor no pueden ser mayor que 15')
 
-'''def requestPuntosCarnets(dni):
+def requestPuntosCarnets(dni):
     session = requests.Session()
     headers1 = {'x-api-key':'eiWee8ep9due4deeshoa8Peichai8Eih'}
-    headers2 = {'apikey':'1d1a4c71-f4bf-4e27-aa24-c4c67d22dc92'}
+    headers2 = {'apikey':'373db4ad-cecc-44bd-8b31-ebae590bfb37'}
 
-    url1 = 'http://127.0.0.1:5000/api/v1/puntos/'+ dni
-    url2 = 'https://aseguradora-conductores.herokuapp.com/api/v1/carnets/remove/'+ dni
+    url1 = 'https://cors-anywhere.herokuapp.com/https://api-puntos-dgt.herokuapp.com/api/v1/puntos/'+ dni
+    url2 = 'https://cors-anywhere.herokuapp.com/https://aseguradora-conductores.herokuapp.com/api/v1/carnets/remove/'+ dni
 
     session.delete(url1, headers=headers1  )
-    session.delete(url2, headers=headers2  )'''
+    session.delete(url2, headers=headers2  )
 
 # =========================
 # Clases
