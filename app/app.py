@@ -19,7 +19,7 @@ import functools
 from circuitbreaker import circuit
 from os.path import join, dirname
 from dotenv import load_dotenv
-import requests
+#import requests
 import sys
 import os.path
 sys.path.append(
