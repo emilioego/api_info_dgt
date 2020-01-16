@@ -122,14 +122,14 @@ def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos,d
         if puntos_actuales>15:
             return abort(400,'Los puntos actuales del conductor no pueden ser mayor que 15')
 
-def requestPuntosCarnets(dni):
+'''def requestPuntosCarnets(dni):
     session = requests.Session()
     headers1 = {'apikey':'1d1a4c71-f4bf-4e27-aa24-c4c67d22dc92'}
     headers2 = {'x-api-key':'eiWee8ep9due4deeshoa8Peichai8Eih'}
     url1 = 'https://aseguradora-conductores.herokuapp.com/api/v1/carnets/remove/'+ dni
     url2 = 'https://api-puntos-dgt.herokuapp.com/api/v1/puntos/'+ dni
     session.delete(url1, headers=headers1  )
-    session.delete(url2, headers=headers2  )
+    session.delete(url2, headers=headers2  )'''
     
 
 # =========================
