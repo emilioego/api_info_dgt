@@ -8,7 +8,9 @@ import yaml
 import flask
 from flask import Flask,request, jsonify, json, abort,make_response
 from flask_restplus import Resource, Api, Namespace
+from flask.ext.cache import Cache
 from pymongo import MongoClient
+from pymongo.errors import ConnectionFailure
 import urllib.parse
 from datetime import datetime
 import json
@@ -42,6 +44,8 @@ app = Flask(__name__)
 #Para quitar los mensajes por defecto de flask en el error 404.
 app.config['ERROR_404_HELP'] = False
 api = Api(app,authorizations=authorizations,security='apikey',prefix="/api/v1",version='1.0',title='API Puntos DGT',description='A simple API about points in the DGT',default_mediatype='application/json',doc='/')
+cache = Cache(app,config={'CACHE_TYPE': 'simple'})
+
 client = MongoClient("mongodb+srv://api:QzEbuGslcPlAy7KN@api-info-puntos-dgt-tp10l.mongodb.net/test?retryWrites=true&w=majority")
 db = client['puntos']
 test = db['mytable']
@@ -53,6 +57,15 @@ if api_key == None:
     load_dotenv(dotenv_path)    
     api_key = os.getenv('PRIVATE_API_KEY')
 
+# ========================================
+# Integracion BBDD
+# ========================================
+
+def mongodb_conn():
+    try:
+        MongoClient("mongodb+srv://api:QzEbuGslcPlAy7KN@api-info-puntos-dgt-tp10l.mongodb.net/test?retryWrites=true&w=majority")
+    except ConnectionFailure:
+        return ("Could not connect to server")
 
 # ========================================
 # Llamada externa
@@ -160,6 +173,7 @@ class Puntos(Resource):
     #Se obtiene el estado más actual de los puntos de cada conductor
     @valid_auth
     @circuit(failure_threshold=10, expected_exception=ConnectionError)
+    @cache.memoize(timeout=30)
     def get(self):
         lista=[]
         #Selecciona todos los dnis únicos existentes
@@ -198,6 +212,7 @@ class PuntosConductor(Resource):
     #Trae la información de los puntos de un conductor en concreto
     @circuit(failure_threshold=10, expected_exception=ConnectionError)
     @valid_auth
+    @cache.memoize(timeout=30)
     def get(self,dni):
         output = [doc for doc in test.find({"dni":dni})]
         #Lanza una excepción si el DNI no existe en la base de datos
@@ -238,6 +253,7 @@ class PuntosConductor(Resource):
 class Historial(Resource):
     @valid_auth
     @circuit(failure_threshold=10, expected_exception=ConnectionError)
+    @cache.memoize(timeout=30)
     def get(self,dni):
         records = [doc for doc in test.find({"dni":dni}).sort("date", -1)]
         #Lanza una excepción si el DNI no existe en la base de datos
@@ -310,4 +326,9 @@ api.add_resource(Multa,'/puntos/<dni>/multa')
 api.add_resource(Recupera,'/puntos/<dni>/recupera')
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    try:
+        mongodb_conn()
+        print("TEST DB OK")
+        app.run(debug=False)
+    except ConnectionFailure:
+        print("Server not available")
