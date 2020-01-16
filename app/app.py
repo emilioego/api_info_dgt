@@ -19,6 +19,7 @@ import functools
 from circuitbreaker import circuit
 from os.path import join, dirname
 from dotenv import load_dotenv
+import requests
 import sys
 import os.path
 sys.path.append(
@@ -37,6 +38,7 @@ authorizations = {
 }
 
 app = Flask(__name__)
+#app.config['ERROR_404_HELP'] = False
 api = Api(app,authorizations=authorizations,security='apikey',prefix="/api/v1",version='1.0',title='API Puntos DGT',description='A simple API about points in the DGT',default_mediatype='application/json',doc='/')
 client = MongoClient("mongodb+srv://api:QzEbuGslcPlAy7KN@api-info-puntos-dgt-tp10l.mongodb.net/test?retryWrites=true&w=majority")
 db = client['puntos']
@@ -93,28 +95,44 @@ def comprobarDNI(dni,found):
         if not found:
             return abort(404,'El DNI del conductor no se encuentra en la BD')    
 
-def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos):
+def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos,dni):
 
     if nPuntos<=0:
             return abort(400,'El número de puntos debe ser mayor que 0')
 
-    if puntos_actuales<=0:
+    if(puntos_actuales==0):
+            #requestPuntosCarnets(dni)
+            return abort(400,'Los puntos actuales del conductor han llegado a 0, se le será retirado el carnet')
+
+        
+
+    if puntos_actuales<0:
             return abort(400,'Los puntos actuales del conductor deben ser mayor que 0')
 
     if puntos_perdidos is not None :
 
-        if puntos_perdidos<=0:
+        if puntos_perdidos<0:
             return abort(400,'Los puntos perdidos del conductor deben ser mayor que 0')
 
     else :
 
-        if puntos_recuperados<=0:
+        if puntos_recuperados<0:
             return abort(400,'Los puntos recuperados del conductor deben ser mayor o igual que 0')
         
         if puntos_actuales>15:
             return abort(400,'Los puntos actuales del conductor no pueden ser mayor que 15')
 
-    
+'''def requestPuntosCarnets(dni):
+    session = requests.Session()
+    headers1 = {'x-api-key':'eiWee8ep9due4deeshoa8Peichai8Eih'}
+    headers2 = {'apikey':'1d1a4c71-f4bf-4e27-aa24-c4c67d22dc92'}
+
+    url1 = 'http://127.0.0.1:5000/api/v1/puntos/'+ dni
+    url2 = 'https://aseguradora-conductores.herokuapp.com/api/v1/carnets/remove/'+ dni
+
+    session.delete(url1, headers=headers1  )
+    session.delete(url2, headers=headers2  )'''
+
 # =========================
 # Clases
 # =========================
@@ -224,8 +242,9 @@ class Multa(Resource):
         punto_perdido_nuevo = int(records[0].get('puntos_perdidos')) + int(npuntos)
         records[0]['puntos_actuales'] = punto_nuevo
         records[0]['puntos_perdidos'] = punto_perdido_nuevo
+       
         #Lanza una excepción si el número de puntos no cumple las restricciones
-        comprobarPuntos(punto_nuevo,punto_perdido_nuevo,None,int(npuntos))
+        comprobarPuntos(punto_nuevo,punto_perdido_nuevo,None,int(npuntos),dni)
         timestamp=datetime.now()
         test.insert_one({'dni': records[0]['dni'],
                                 'puntos_actuales': records[0]['puntos_actuales'], 
@@ -252,7 +271,7 @@ class Recupera(Resource):
         records[0]['puntos_actuales'] = punto_nuevo
         records[0]['puntos_recuperados'] = punto_recuperado_nuevo
         #Lanza una excepción si el número de puntos no cumple las restricciones
-        comprobarPuntos(punto_nuevo,None,punto_recuperado_nuevo,int(npuntos))
+        comprobarPuntos(punto_nuevo,None,punto_recuperado_nuevo,int(npuntos),dni)
         timestamp=datetime.now()
         test.insert_one({'dni': records[0]['dni'],
                                 'puntos_actuales': records[0]['puntos_actuales'], 
