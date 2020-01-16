@@ -38,8 +38,7 @@ authorizations = {
 }
 
 app = Flask(__name__)
-#Desactivamos el mensaje por defecto que pone flask 
-app.config['ERROR_404_HELP'] = False
+
 api = Api(app,authorizations=authorizations,security='apikey',prefix="/api/v1",version='1.0',title='API Puntos DGT',description='A simple API about points in the DGT',default_mediatype='application/json',doc='/')
 client = MongoClient("mongodb+srv://api:QzEbuGslcPlAy7KN@api-info-puntos-dgt-tp10l.mongodb.net/test?retryWrites=true&w=majority")
 db = client['puntos']
