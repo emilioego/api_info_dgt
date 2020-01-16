@@ -38,7 +38,8 @@ authorizations = {
 }
 
 app = Flask(__name__)
-#app.config['ERROR_404_HELP'] = False
+#Para quitar los mensajes por defecto de flask en el error 404.
+app.config['ERROR_404_HELP'] = False
 api = Api(app,authorizations=authorizations,security='apikey',prefix="/api/v1",version='1.0',title='API Puntos DGT',description='A simple API about points in the DGT',default_mediatype='application/json',doc='/')
 client = MongoClient("mongodb+srv://api:QzEbuGslcPlAy7KN@api-info-puntos-dgt-tp10l.mongodb.net/test?retryWrites=true&w=majority")
 db = client['puntos']
@@ -86,6 +87,18 @@ def valid_auth(func):
         return wrapper
     return actual_decorator '''
 
+def requestPuntosCarnets(dni):
+    session = requests.Session()
+    headers1 = {'x-api-key':'eiWee8ep9due4deeshoa8Peichai8Eih'}
+    headers2 = {'apikey':'373db4ad-cecc-44bd-8b31-ebae590bfb37'}
+
+    url1 = 'https://api-puntos-dgt.herokuapp.com/api/v1/puntos/'+ dni
+    url2 = 'https://aseguradora-conductores.herokuapp.com/api/v1/carnets/remove/'+ dni
+
+    session.delete(url1, headers=headers1  )
+    session.delete(url2, headers=headers2  )
+
+
 def comprobarDNI(dni,found):
     output = [doc for doc in test.find({"dni":dni})]
     if output:
@@ -100,7 +113,7 @@ def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos,d
     if nPuntos<=0:
             return abort(400,'El número de puntos debe ser mayor que 0')
 
-    if(puntos_actuales==0):
+    if puntos_actuales==0:
             requestPuntosCarnets(dni)
             return abort(400,'Los puntos actuales del conductor han llegado a 0, se le será retirado el carnet')
 
@@ -119,17 +132,6 @@ def comprobarPuntos(puntos_actuales,puntos_perdidos,puntos_recuperados,nPuntos,d
         
         if puntos_actuales>15:
             return abort(400,'Los puntos actuales del conductor no pueden ser mayor que 15')
-
-def requestPuntosCarnets(dni):
-    session = requests.Session()
-    headers1 = {'x-api-key':'eiWee8ep9due4deeshoa8Peichai8Eih'}
-    headers2 = {'apikey':'373db4ad-cecc-44bd-8b31-ebae590bfb37'}
-
-    url1 = 'https://cors-anywhere.herokuapp.com/https://api-puntos-dgt.herokuapp.com/api/v1/puntos/'+ dni
-    url2 = 'https://cors-anywhere.herokuapp.com/https://aseguradora-conductores.herokuapp.com/api/v1/carnets/remove/'+ dni
-
-    session.delete(url1, headers=headers1  )
-    session.delete(url2, headers=headers2  )
 
 # =========================
 # Clases
