@@ -8,7 +8,7 @@ import yaml
 import flask
 from flask import Flask,request, jsonify, json, abort,make_response
 from flask_restplus import Resource, Api, Namespace
-from flask.ext.cache import Cache
+from flask_caching import Cache
 from pymongo import MongoClient
 from pymongo.errors import ConnectionFailure
 import urllib.parse
