@@ -226,7 +226,7 @@ class Multa(Resource):
         records[0]['puntos_perdidos'] = punto_perdido_nuevo
         #Lanza una excepción si el número de puntos no cumple las restricciones
         comprobarPuntos(punto_nuevo,punto_perdido_nuevo,None,int(npuntos))
-        timestamp=datetime.utcnow()
+        timestamp=datetime.now()
         test.insert_one({'dni': records[0]['dni'],
                                 'puntos_actuales': records[0]['puntos_actuales'], 
                                 'puntos_perdidos': records[0]['puntos_perdidos'], 
@@ -253,7 +253,7 @@ class Recupera(Resource):
         records[0]['puntos_recuperados'] = punto_recuperado_nuevo
         #Lanza una excepción si el número de puntos no cumple las restricciones
         comprobarPuntos(punto_nuevo,None,punto_recuperado_nuevo,int(npuntos))
-        timestamp=datetime.utcnow()
+        timestamp=datetime.now()
         test.insert_one({'dni': records[0]['dni'],
                                 'puntos_actuales': records[0]['puntos_actuales'], 
                                 'puntos_perdidos': records[0]['puntos_perdidos'], 
