@@ -24,6 +24,7 @@ import sys
 import os.path
 sys.path.append(
     os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+import random
 
 # =========================
 # Extensions initialization
@@ -59,15 +60,15 @@ if api_key == None:
 def external_call():
     res = 0
     url = "https://dawn2k-random-german-profiles-and-names-generator-v1.p.rapidapi.com/"
-    querystring = {"count":"1","gender":"b","maxage":"40","minage":"30","cc":"all","email":"gmail.com%2Cyahoo.com","pwlen":"12","ip":"a","phone":"l%2Ct%2Co","uuid":"false","lic":"false","color":"false","seed":"helloworld","images":"false","format":"json"}
+    querystring = {"count":"100","gender":"b","maxage":"40","minage":"30","cc":"all","email":"gmail.com%2Cyahoo.com","pwlen":"12","ip":"a","phone":"l%2Ct%2Co","uuid":"false","lic":"false","color":"false","seed":"helloworld","images":"false","format":"json"}
     headers = {
         'x-rapidapi-host': "dawn2k-random-german-profiles-and-names-generator-v1.p.rapidapi.com",
         'x-rapidapi-key': "6c93257d08mshebdb21165c37f32p1c92bfjsnfb538fb3ad42"
     }
     response = requests.request("GET", url, headers=headers, params=querystring)
-    x = json.loads(response.text)
-    res = x[0].get('birthday')
-    print(res)
+    i = random.randint(0, 99)
+    xxx = json.loads(response.text)
+    res = xxx[i].get('birthday')
     return res
 
 # ========================================
