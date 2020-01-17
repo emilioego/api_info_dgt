@@ -281,11 +281,12 @@ class Multa(Resource):
         #Lanza una excepción si el número de puntos no cumple las restricciones
         comprobarPuntos(punto_nuevo,punto_perdido_nuevo,None,int(npuntos),dni)
         timestamp=datetime.now()
+        birthday = external_call()      
         test.insert_one({'dni': records[0]['dni'],
                                 'puntos_actuales': records[0]['puntos_actuales'], 
                                 'puntos_perdidos': records[0]['puntos_perdidos'], 
                                 'puntos_recuperados': records[0]['puntos_recuperados'],
-                                 'date' : timestamp })
+                                 'date' : timestamp,'birthday' : birthday })
         return make_response(jsonify({'result' : records[0]}),201)
 
 
@@ -308,11 +309,12 @@ class Recupera(Resource):
         #Lanza una excepción si el número de puntos no cumple las restricciones
         comprobarPuntos(punto_nuevo,None,punto_recuperado_nuevo,int(npuntos),dni)
         timestamp=datetime.now()
+        birthday = external_call()      
         test.insert_one({'dni': records[0]['dni'],
                                 'puntos_actuales': records[0]['puntos_actuales'], 
                                 'puntos_perdidos': records[0]['puntos_perdidos'], 
                                 'puntos_recuperados': records[0]['puntos_recuperados'],
-                                 'date' : timestamp })
+                                 'date' : timestamp,'birthday' : birthday })
         return make_response(jsonify({'result' : records[0]}),201)
 
 
