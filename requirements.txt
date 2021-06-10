@@ -10,7 +10,7 @@ cryptography==3.3.2
 defusedxml==0.6.0
 dnspython==1.16.0
 email-validator==1.0.5
-fastapi==0.44.0
+fastapi==0.65.2
 Flask==1.1.1
 Flask-API==2.0
 Flask-Babel==0.12.2
