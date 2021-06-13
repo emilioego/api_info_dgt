@@ -40,7 +40,7 @@ pluggy==0.13.1
 prison==0.1.2
 py==1.10.0
 pycparser==2.19
-pydantic==1.2
+pydantic==1.6.2
 PyJWT==1.7.1
 pymongo==3.9.0
 pyOpenSSL==19.1.0
